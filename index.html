@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistem de acces inteligent</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <h2>AccessControl</h2>
+        <p class="subtitlu">Monitorizare Web</p>
+
+        <ul>
+            <li class="active">Dashboard</li>
+            <li>RFID</li>
+            <li>Senzori</li>
+            <li>Log acces</li>
+            <li>Setări</li>
+        </ul>
+    </aside>
+
+    <main class="content">
+
+        <header>
+            <div>
+                <h1>Sistem de acces inteligent</h1>
+                <p>Interfață grafică pentru monitorizarea accesului și securității</p>
+            </div>
+
+            <div class="student">
+                <span>Student:</span>
+                <strong>Tocea Stefan</strong>
+            </div>
+        </header>
+
+        <section class="cards">
+
+            <div class="card">
+                <h3>Stare ușă</h3>
+                <div id="doorStatus" class="status inchisa">ÎNCHISĂ</div>
+                <p>Ultima actualizare: acum câteva secunde</p>
+            </div>
+
+            <div class="card">
+                <h3>Alarmă</h3>
+                <div id="alarmStatus" class="status dezactivata">DEZACTIVATĂ</div>
+                <p>Control securitate perimetru</p>
+            </div>
+
+            <div class="card">
+                <h3>Ultimul card RFID</h3>
+                <div id="rfidCode" class="rfid">29 CA 28 12</div>
+                <p id="rfidResult">Acces permis</p>
+            </div>
+
+            <div class="card">
+                <h3>Senzor mișcare</h3>
+                <div id="motionStatus" class="status normal">NORMAL</div>
+                <p>Nu există mișcare suspectă</p>
+            </div>
+
+        </section>
+
+        <section class="control-panel">
+
+            <div class="panel">
+                <h2>Panou de control</h2>
+
+                <div class="buttons">
+                    <button onclick="openDoor()">Deschide ușa</button>
+                    <button onclick="closeDoor()">Închide ușa</button>
+                    <button onclick="activateAlarm()" class="danger">Activează alarma</button>
+                    <button onclick="deactivateAlarm()" class="safe">Dezactivează alarma</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Descriere proiect</h2>
+                <p>
+                    Proiectul constă în realizarea unui sistem de control al accesului
+                    bazat pe cititor RFID și senzori de mișcare, gestionat prin placa Arduino.
+                    Interfața web permite monitorizarea stării ușii, verificarea accesului
+                    și afișarea log-urilor de intrare/ieșire.
+                </p>
+            </div>
+
+        </section>
+
+        <section class="logs">
+            <h2>Log-uri de acces</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ora</th>
+                        <th>Cod RFID</th>
+                        <th>Utilizator</th>
+                        <th>Status</th>
+                        <th>Ușă</th>
+                    </tr>
+                </thead>
+
+                <tbody id="logTable">
+                    <tr>
+                        <td>10:24</td>
+                        <td>29 CA 28 12</td>
+                        <td>Administrator</td>
+                        <td class="permis">Permis</td>
+                        <td>Deschisă</td>
+                    </tr>
+
+                    <tr>
+                        <td>10:31</td>
+                        <td>91 B3 44 A2</td>
+                        <td>Necunoscut</td>
+                        <td class="respins">Respins</td>
+                        <td>Închisă</td>
+                    </tr>
+
+                    <tr>
+                        <td>10:45</td>
+                        <td>29 CA 28 12</td>
+                        <td>Administrator</td>
+                        <td class="permis">Permis</td>
+                        <td>Deschisă</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
