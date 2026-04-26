@@ -13,21 +13,21 @@
     <aside class="sidebar">
         <div class="logo-box">
             <h2>SecureAccess</h2>
-            <p>Control acces inteligent</p>
+            <p>Panou control</p>
         </div>
 
-        <nav class="menu">
-            <button class="menu-btn active" onclick="showPage('dashboard', this)">Dashboard</button>
-            <button class="menu-btn" onclick="showPage('senzori', this)">Senzori</button>
-            <button class="menu-btn" onclick="showPage('rfid', this)">Acces RFID</button>
-            <button class="menu-btn" onclick="showPage('securitate', this)">Securitate</button>
-            <button class="menu-btn" onclick="showPage('istoric', this)">Istoric</button>
-            <button class="menu-btn" onclick="showPage('administrare', this)">Administrare</button>
+        <nav class="side-menu">
+            <button class="menu-btn active" data-section="dashboardSection">Dashboard</button>
+            <button class="menu-btn" data-section="senzoriSection">Senzori</button>
+            <button class="menu-btn" data-section="rfidSection">Acces RFID</button>
+            <button class="menu-btn" data-section="securitateSection">Securitate</button>
+            <button class="menu-btn" data-section="istoricSection">Istoric</button>
+            <button class="menu-btn" data-section="administrareSection">Administrare</button>
         </nav>
 
-        <div class="sidebar-bottom">
+        <div class="sidebar-footer">
             <p>Proiect final</p>
-            <strong>Interfață grafică web</strong>
+            <strong>Tocea Stefan</strong>
         </div>
     </aside>
 
@@ -36,7 +36,7 @@
         <header class="topbar">
             <div>
                 <h1>Sistem de acces inteligent</h1>
-                <p>Interfață web pentru RFID, senzori de mișcare, alarmă și monitorizare acces</p>
+                <p>Interfață web pentru RFID, senzori de mișcare, alarmă și control acces</p>
             </div>
 
             <div class="system-box">
@@ -46,14 +46,9 @@
         </header>
 
         <!-- DASHBOARD -->
-        <section id="dashboard" class="page-section active-section">
+        <section id="dashboardSection" class="page-section active-section">
 
-            <div class="page-title">
-                <h2>Dashboard principal</h2>
-                <p>Starea generală a sistemului de acces</p>
-            </div>
-
-            <section class="grid-top">
+            <div class="grid-top">
 
                 <div class="card large-card">
                     <div class="card-header">
@@ -114,9 +109,9 @@
 
                 </div>
 
-            </section>
+            </div>
 
-            <section class="security-grid">
+            <div class="security-grid">
 
                 <div class="card security-card">
                     <p class="mini-title">NIVEL SECURITATE</p>
@@ -143,9 +138,9 @@
                     </p>
                 </div>
 
-            </section>
+            </div>
 
-            <section class="stats-grid">
+            <div class="stats-grid">
 
                 <div class="stat-card">
                     <span>Accesări permise</span>
@@ -177,19 +172,19 @@
                     <strong id="lockStatus">NU</strong>
                 </div>
 
-            </section>
+            </div>
 
         </section>
 
         <!-- SENZORI -->
-        <section id="senzori" class="page-section">
+        <section id="senzoriSection" class="page-section">
 
-            <div class="page-title">
-                <h2>Monitorizare senzori</h2>
-                <p>Senzor exterior, senzor interior și stare ușă/servo</p>
+            <div class="section-title">
+                <h2>Senzori de mișcare</h2>
+                <p>Monitorizare pentru exteriorul ușii și holul interior</p>
             </div>
 
-            <section class="diagram-card card">
+            <div class="diagram-card card">
                 <div class="diagram-top">
                     <div>
                         <h2>Diagramă zonă acces</h2>
@@ -217,9 +212,9 @@
                         <strong>Hol</strong>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section class="grid-middle">
+            <div class="grid-middle">
 
                 <div class="card sensor-card">
                     <div class="sensor-head">
@@ -278,171 +273,143 @@
                     </button>
                 </div>
 
-            </section>
+            </div>
 
         </section>
 
         <!-- RFID -->
-        <section id="rfid" class="page-section">
+        <section id="rfidSection" class="page-section">
 
-            <div class="page-title">
+            <div class="section-title">
                 <h2>Acces RFID</h2>
-                <p>Scanare carduri și listă utilizatori autorizați</p>
+                <p>Simulare scanare carduri autorizate și neautorizate</p>
             </div>
 
-            <section class="grid-two">
+            <div class="grid-top">
 
-                <div class="card">
-                    <p class="mini-title">SCANARE CARD</p>
-                    <h2>Simulare acces RFID</h2>
+                <div class="card large-card">
+                    <div class="card-header">
+                        <div>
+                            <p class="mini-title">RFID</p>
+                            <h2>Cititor carduri</h2>
+                        </div>
+
+                        <div class="door-icon unlocked">💳</div>
+                    </div>
 
                     <p class="soft-text">
-                        Cardul autorizat deschide ușa timp de 5 secunde. Cardul respins crește numărul de încercări greșite.
+                        Cardul autorizat deschide ușa timp de 5 secunde. Cardurile respinse cresc numărul de încercări greșite.
                     </p>
 
                     <div class="rfid-panel">
-                        <span>Ultimul card RFID</span>
-                        <strong id="lastCardMirror">-- -- -- --</strong>
-                        <p id="lastUserMirror">Utilizator: necunoscut</p>
+                        <span>Ultimul card scanat</span>
+                        <strong id="lastCardRfidMirror">Vezi pe Dashboard</strong>
+                        <p>Carduri valide: Administrator și Student</p>
                     </div>
 
                     <div class="button-row">
                         <button onclick="scanValidCard()">Card Administrator</button>
                         <button onclick="scanSecondValidCard()" class="btn-cyan">Card Student</button>
-                        <button onclick="scanInvalidCard()" class="btn-red">Card Respins</button>
+                        <button onclick="scanInvalidCard()" class="btn-red">Card Necunoscut</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2>Reguli acces</h2>
-                    <p class="soft-text">
-                        După scanarea unui card valid, ușa se deschide pentru 5 secunde.
-                        În această perioadă, mișcarea pe hol este considerată normală.
-                    </p>
+                    <h2>Utilizatori autorizați</h2>
 
-                    <p class="soft-text">
-                        După 3 carduri respinse consecutiv, sistemul se blochează temporar timp de 10 secunde.
-                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nume</th>
+                                <th>Card RFID</th>
+                                <th>Rol</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Administrator</td>
+                                <td>29 CA 28 12</td>
+                                <td>Admin</td>
+                                <td class="status-ok">Activ</td>
+                            </tr>
+
+                            <tr>
+                                <td>Student</td>
+                                <td>53 7F 21 C9</td>
+                                <td>Utilizator</td>
+                                <td class="status-ok">Activ</td>
+                            </tr>
+
+                            <tr>
+                                <td>Necunoscut</td>
+                                <td>91 B3 44 A2</td>
+                                <td>Fără acces</td>
+                                <td class="status-danger">Respins</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-            </section>
-
-            <section class="card users-card">
-                <h2>Utilizatori autorizați</h2>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nume</th>
-                            <th>Card RFID</th>
-                            <th>Rol</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td>Administrator</td>
-                            <td>29 CA 28 12</td>
-                            <td>Admin</td>
-                            <td class="status-ok">Activ</td>
-                        </tr>
-
-                        <tr>
-                            <td>Student</td>
-                            <td>53 7F 21 C9</td>
-                            <td>Utilizator</td>
-                            <td class="status-ok">Activ</td>
-                        </tr>
-
-                        <tr>
-                            <td>Necunoscut</td>
-                            <td>91 B3 44 A2</td>
-                            <td>Fără acces</td>
-                            <td class="status-danger">Respins</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
+            </div>
 
         </section>
 
         <!-- SECURITATE -->
-        <section id="securitate" class="page-section">
+        <section id="securitateSection" class="page-section">
 
-            <div class="page-title">
+            <div class="section-title">
                 <h2>Securitate</h2>
-                <p>Reguli, nivel securitate, alarmă, buzzer și blocare temporară</p>
+                <p>Alarmă, buzzer, nivel securitate și regulă de protecție</p>
             </div>
 
-            <section class="grid-two">
+            <div class="security-grid">
+
+                <div class="card security-card">
+                    <p class="mini-title">NIVEL SECURITATE</p>
+                    <h2 id="securityLevelMirror">Controlat din Dashboard</h2>
+                    <p class="soft-text">
+                        NORMAL = sistem ok, RIDICAT = mod noapte, CRITIC = alarmă sau blocare.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <p class="mini-title">ALARMĂ</p>
+                    <h2>Control alarmă</h2>
+                    <div class="button-row">
+                        <button onclick="testAlarm()" class="btn-red">Test alarmă</button>
+                        <button onclick="disableAlarm()" class="btn-green">Dezactivează alarma</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <p class="mini-title">MOD SISTEM</p>
+                    <h2>Regim monitorizare</h2>
+                    <div class="button-row">
+                        <button onclick="setNormalMode()">Mod normal</button>
+                        <button onclick="setNightMode()" class="btn-darkblue">Mod noapte</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="grid-status">
 
                 <div class="card">
                     <h3>Regulă de securitate</h3>
 
                     <p class="soft-text">
-                        Dacă senzorul de pe hol detectează mișcare și ușa nu este deschisă în urma unui card autorizat
-                        scanat în ultimele <strong>5 secunde</strong>, sistemul pornește alarma și trece pe nivel critic.
+                        Dacă senzorul de pe hol detectează mișcare și ușa nu este deschisă
+                        în urma unui card autorizat scanat în ultimele <strong>5 secunde</strong>,
+                        sistemul pornește alarma și trece pe nivel critic.
                     </p>
 
                     <p class="soft-text">
-                        La nivel critic, ușa rămâne blocată, buzzerul virtual devine activ și sistemul afișează alertă.
+                        După <strong>3 carduri respinse consecutiv</strong>, sistemul se blochează
+                        temporar timp de 10 secunde.
                     </p>
                 </div>
-
-                <div class="card">
-                    <h3>Blocare temporară</h3>
-
-                    <p class="soft-text">
-                        După <strong>3 carduri respinse consecutiv</strong>, sistemul se blochează timp de 10 secunde.
-                    </p>
-
-                    <p class="soft-text">
-                        În timpul blocării, scanările RFID sunt ignorate.
-                    </p>
-                </div>
-
-            </section>
-
-            <section class="security-grid">
-
-                <div class="card security-card">
-                    <p class="mini-title">NIVEL SECURITATE</p>
-                    <h2 id="securityLevelMirror">NORMAL</h2>
-                    <p id="securityDescriptionMirror" class="soft-text">
-                        Sistemul funcționează fără alerte.
-                    </p>
-                </div>
-
-                <div class="card buzzer-card">
-                    <p class="mini-title">BUZZER VIRTUAL</p>
-                    <h2 id="buzzerTextMirror">OPRIT</h2>
-                    <div id="buzzerLightMirror" class="buzzer-light off"></div>
-                    <p id="buzzerDescriptionMirror" class="soft-text">
-                        Buzzerul este dezactivat.
-                    </p>
-                </div>
-
-                <div class="card">
-                    <p class="mini-title">TESTARE</p>
-                    <h2>Test alarmă</h2>
-                    <p class="soft-text">Pornește manual alarma pentru verificarea sistemului.</p>
-                    <button onclick="testAlarm()" class="btn-red full-btn">Test alarmă</button>
-                </div>
-
-            </section>
-
-        </section>
-
-        <!-- ISTORIC -->
-        <section id="istoric" class="page-section">
-
-            <div class="page-title">
-                <h2>Istoric sistem</h2>
-                <p>Jurnal evenimente și stare ușă</p>
-            </div>
-
-            <section class="grid-two">
 
                 <div class="card">
                     <h3>Stare ușă</h3>
@@ -453,15 +420,17 @@ Sistem pregătit pentru scanare RFID.
                     </textarea>
                 </div>
 
-                <div class="card action-card">
-                    <p class="mini-title">ULTIMA ACȚIUNE</p>
-                    <h2 id="lastActionMirror">Interfață pornită</h2>
-                    <p id="lastActionTimeMirror" class="soft-text">
-                        Așteptare evenimente sistem.
-                    </p>
-                </div>
+            </div>
 
-            </section>
+        </section>
+
+        <!-- ISTORIC -->
+        <section id="istoricSection" class="page-section">
+
+            <div class="section-title">
+                <h2>Istoric evenimente</h2>
+                <p>Log-uri pentru acces, senzori, alarmă și blocări</p>
+            </div>
 
             <section class="card logs-card">
 
@@ -469,6 +438,11 @@ Sistem pregătit pentru scanare RFID.
                     <div>
                         <h2>Jurnal evenimente</h2>
                         <p class="soft-text">Istoric acces, senzori, alarmă și blocări</p>
+                    </div>
+
+                    <div class="button-row">
+                        <button onclick="downloadLogs()" class="btn-cyan">Descarcă log-uri</button>
+                        <button onclick="clearLogs()" class="btn-darkblue">Șterge log-uri</button>
                     </div>
                 </div>
 
@@ -497,48 +471,36 @@ Sistem pregătit pentru scanare RFID.
         </section>
 
         <!-- ADMINISTRARE -->
-        <section id="administrare" class="page-section">
+        <section id="administrareSection" class="page-section">
 
-            <div class="page-title">
+            <div class="section-title">
                 <h2>Administrare</h2>
-                <p>Funcții pentru resetare, export și curățare date</p>
+                <p>Funcții de testare și control general</p>
             </div>
 
-            <section class="admin-grid">
-
-                <div class="card">
-                    <h2>Reset sistem</h2>
-                    <p class="soft-text">
-                        Resetează starea sistemului: alarmă oprită, ușă închisă, nivel normal și statistici la zero.
-                    </p>
-                    <button onclick="resetSystem()" class="btn-green full-btn">Reset sistem</button>
+            <section class="card admin-card">
+                <div>
+                    <h2>Panou administrare</h2>
+                    <p class="soft-text">Funcții suplimentare pentru testare și administrare sistem</p>
                 </div>
 
-                <div class="card">
-                    <h2>Export log-uri</h2>
-                    <p class="soft-text">
-                        Descarcă jurnalul evenimentelor într-un fișier text.
-                    </p>
-                    <button onclick="downloadLogs()" class="btn-cyan full-btn">Descarcă log-uri</button>
+                <div class="admin-buttons">
+                    <button onclick="testAlarm()" class="btn-red">Test alarmă</button>
+                    <button onclick="disableAlarm()" class="btn-green">Dezactivează alarma</button>
+                    <button onclick="resetSystem()" class="btn-green">Reset sistem</button>
+                    <button onclick="downloadLogs()" class="btn-cyan">Descarcă log-uri</button>
+                    <button onclick="clearLogs()" class="btn-darkblue">Șterge log-uri</button>
                 </div>
-
-                <div class="card">
-                    <h2>Ștergere istoric</h2>
-                    <p class="soft-text">
-                        Curăță tabelul cu evenimente, fără să reseteze complet sistemul.
-                    </p>
-                    <button onclick="clearLogs()" class="btn-darkblue full-btn">Șterge log-uri</button>
-                </div>
-
-                <div class="card">
-                    <h2>Test alarmă</h2>
-                    <p class="soft-text">
-                        Activează alarma manual, pentru verificarea funcției de avertizare.
-                    </p>
-                    <button onclick="testAlarm()" class="btn-red full-btn">Test alarmă</button>
-                </div>
-
             </section>
+
+            <div class="card">
+                <h3>Explicație proiect</h3>
+                <p class="soft-text">
+                    Proiectul simulează o interfață grafică pentru un sistem de acces inteligent.
+                    Utilizatorul poate scana carduri RFID, poate monitoriza senzorii de mișcare,
+                    poate verifica starea ușii și poate gestiona alarma.
+                </p>
+            </div>
 
         </section>
 
