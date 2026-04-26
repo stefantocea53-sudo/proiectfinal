@@ -1,13 +1,18 @@
+let lastValidScanTime = 0;
+let accessWindowSeconds = 5;
+
 let doorOpen = false;
 let alarmActive = false;
+let nightMode = false;
 
-let allowedCount = 0;
-let rejectedCount = 0;
-let alertCount = 0;
-let totalLogs = 0;
+let validCount = 0;
+let invalidCount = 0;
+let outsideCount = 0;
+let alarmCount = 0;
 
 function getTime() {
     let now = new Date();
+
     let h = now.getHours().toString().padStart(2, "0");
     let m = now.getMinutes().toString().padStart(2, "0");
     let s = now.getSeconds().toString().padStart(2, "0");
@@ -16,239 +21,199 @@ function getTime() {
 }
 
 function updateStats() {
-    document.getElementById("allowedCount").innerText = allowedCount;
-    document.getElementById("rejectedCount").innerText = rejectedCount;
-    document.getElementById("alertCount").innerText = alertCount;
-    document.getElementById("totalLogs").innerText = totalLogs;
+    document.getElementById("validCount").innerText = validCount;
+    document.getElementById("invalidCount").innerText = invalidCount;
+    document.getElementById("outsideCount").innerText = outsideCount;
+    document.getElementById("alarmCount").innerText = alarmCount;
 }
 
-function openDoor() {
-    doorOpen = true;
-
-    let doorStatus = document.getElementById("doorStatus");
-    doorStatus.innerText = "DESCHISĂ";
-    doorStatus.className = "big-status green";
-
-    document.getElementById("doorInfo").innerText = "Ușa este deschisă pentru acces autorizat.";
-
-    addSecurityLog("Ușă", "Ușa a fost deschisă manual", "Info");
-}
-
-function closeDoor() {
-    doorOpen = false;
-
-    let doorStatus = document.getElementById("doorStatus");
-    doorStatus.innerText = "ÎNCHISĂ";
-    doorStatus.className = "big-status red";
-
-    document.getElementById("doorInfo").innerText = "Ușa este blocată pentru acces neautorizat.";
-
-    addSecurityLog("Ușă", "Ușa a fost închisă", "Info");
-}
-
-function activateAlarm() {
-    alarmActive = true;
-
-    let alarmStatus = document.getElementById("alarmStatus");
-    alarmStatus.innerText = "ACTIVATĂ";
-    alarmStatus.className = "big-status red";
-
-    document.getElementById("alarmInfo").innerText = "Sistemul de alarmă este activ.";
-
-    alertCount++;
-    addSecurityLog("Alarmă", "Alarma a fost activată", "Avertizare");
-    updateStats();
-}
-
-function deactivateAlarm() {
-    alarmActive = false;
-
-    let alarmStatus = document.getElementById("alarmStatus");
-    alarmStatus.innerText = "DEZACTIVATĂ";
-    alarmStatus.className = "big-status green";
-
-    document.getElementById("alarmInfo").innerText = "Sistemul de alarmă nu este activ.";
-
-    addSecurityLog("Alarmă", "Alarma a fost dezactivată", "Info");
-}
-
-function setNormalMode() {
-    let mode = document.getElementById("modeStatus");
-    mode.innerText = "NORMAL";
-    mode.className = "big-status blue";
-
-    addSecurityLog("Sistem", "Modul normal a fost activat", "Info");
-}
-
-function setNightMode() {
-    let mode = document.getElementById("modeStatus");
-    mode.innerText = "NOAPTE";
-    mode.className = "big-status purple";
-
-    activateAlarm();
-    addSecurityLog("Sistem", "Modul de noapte a fost activat", "Avertizare");
-}
-
-function scanAllowedCard() {
-    let cod = "29 CA 28 12";
-    let user = "Administrator";
-
-    document.getElementById("rfidCode").innerText = cod;
-    document.getElementById("rfidInfo").innerText = "Card autorizat. Acces permis.";
-
-    allowedCount++;
-    openDoor();
-
-    addAccessLog(cod, user, "Permis", "Deschisă");
-    updateStats();
-}
-
-function scanRejectedCard() {
-    let cod = "91 B3 44 A2";
-    let user = "Necunoscut";
-
-    document.getElementById("rfidCode").innerText = cod;
-    document.getElementById("rfidInfo").innerText = "Card necunoscut. Acces respins.";
-
-    rejectedCount++;
-    alertCount++;
-
-    closeDoor();
-
-    addAccessLog(cod, user, "Respins", "Închisă");
-    addSecurityLog("RFID", "Tentativă de acces cu un card necunoscut", "Critic");
-
-    updateStats();
-}
-
-function simulateMotion() {
-    let motionStatus = document.getElementById("motionStatus");
-
-    motionStatus.innerText = "Mișcare";
-    motionStatus.className = "badge orange";
-
-    if (alarmActive === true) {
-        alertCount++;
-        addSecurityLog("PIR", "Mișcare detectată cu alarma activă", "Critic");
-    } else {
-        addSecurityLog("PIR", "Mișcare detectată în mod normal", "Info");
-    }
-
-    updateStats();
-
-    setTimeout(function() {
-        motionStatus.innerText = "Normal";
-        motionStatus.className = "badge blue";
-    }, 4000);
-}
-
-function simulateGasAlert() {
-    let gasStatus = document.getElementById("gasStatus");
-
-    gasStatus.innerText = "Pericol";
-    gasStatus.className = "badge red";
-
-    alertCount++;
-    activateAlarm();
-    addSecurityLog("Gaz/Fum", "Nivel periculos detectat", "Critic");
-
-    updateStats();
-
-    setTimeout(function() {
-        gasStatus.innerText = "Sigur";
-        gasStatus.className = "badge green";
-    }, 5000);
-}
-
-function updateTemperatureAndHumidity() {
-    let temp = Math.floor(Math.random() * 8) + 22;
-    let humidity = Math.floor(Math.random() * 20) + 40;
-
-    document.getElementById("tempValue").innerText = temp + "°C";
-    document.getElementById("humidityValue").innerText = humidity + "%";
-}
-
-function addAccessLog(cod, user, status, usa) {
-    let table = document.getElementById("accessLog");
-
+function addLog(source, event, status) {
+    let table = document.getElementById("logTable");
     let row = document.createElement("tr");
 
-    let statusClass = "neutral";
+    let statusClass = "status-info";
 
     if (status === "Permis") {
-        statusClass = "permis";
+        statusClass = "status-ok";
     }
 
     if (status === "Respins") {
-        statusClass = "respins";
+        statusClass = "status-warning";
     }
 
-    row.innerHTML = `
-        <td>${getTime()}</td>
-        <td>${cod}</td>
-        <td>${user}</td>
-        <td class="${statusClass}">${status}</td>
-        <td>${usa}</td>
-    `;
-
-    table.prepend(row);
-
-    totalLogs++;
-    updateStats();
-}
-
-function addSecurityLog(source, event, level) {
-    let table = document.getElementById("securityLog");
-
-    let row = document.createElement("tr");
-
-    let levelClass = "neutral";
-
-    if (level === "Info") {
-        levelClass = "permis";
+    if (status === "Alarmă") {
+        statusClass = "status-danger";
     }
 
-    if (level === "Avertizare") {
-        levelClass = "neutral";
-    }
-
-    if (level === "Critic") {
-        levelClass = "respins";
+    if (status === "Info") {
+        statusClass = "status-info";
     }
 
     row.innerHTML = `
         <td>${getTime()}</td>
         <td>${source}</td>
         <td>${event}</td>
-        <td class="${levelClass}">${level}</td>
+        <td class="${statusClass}">${status}</td>
     `;
 
     table.prepend(row);
+}
 
-    totalLogs++;
+function scanValidCard() {
+    lastValidScanTime = Date.now();
+    validCount++;
+
+    document.getElementById("lastCard").innerText = "29 CA 28 12";
+    document.getElementById("accessMessage").innerText = "Card autorizat. Acces permis pentru 5 secunde.";
+
+    openDoor();
+
+    addLog("RFID", "Card autorizat scanat", "Permis");
+    updateStats();
+
+    setTimeout(function() {
+        if (doorOpen === true) {
+            closeDoor();
+        }
+    }, 5000);
+}
+
+function scanInvalidCard() {
+    invalidCount++;
+
+    document.getElementById("lastCard").innerText = "91 B3 44 A2";
+    document.getElementById("accessMessage").innerText = "Card respins. Accesul nu este permis.";
+
+    closeDoor();
+
+    addLog("RFID", "Card necunoscut scanat", "Respins");
     updateStats();
 }
 
-function autoSimulation() {
-    let random = Math.floor(Math.random() * 5);
+function openDoor() {
+    doorOpen = true;
 
-    if (random === 0) {
-        scanAllowedCard();
+    document.getElementById("doorText").innerText = "Ușă deschisă";
+    document.getElementById("doorIcon").innerText = "🔓";
+    document.getElementById("doorIcon").className = "door-icon unlocked";
+
+    document.getElementById("servoText").innerText = "Deschisă";
+    document.getElementById("servoLight").className = "sensor-light green-light";
+}
+
+function closeDoor() {
+    doorOpen = false;
+
+    document.getElementById("doorText").innerText = "Ușă blocată";
+    document.getElementById("doorIcon").innerText = "🔒";
+    document.getElementById("doorIcon").className = "door-icon locked";
+
+    document.getElementById("servoText").innerText = "Închisă";
+    document.getElementById("servoLight").className = "sensor-light red-light";
+}
+
+function detectOutsideMotion() {
+    outsideCount++;
+
+    document.getElementById("outsideLight").className = "sensor-light orange-light";
+    document.getElementById("outsideText").innerText = "Mișcare detectată în fața ușii.";
+
+    addLog("PIR exterior", "Persoană detectată în fața ușii", "Info");
+    updateStats();
+
+    setTimeout(function() {
+        document.getElementById("outsideLight").className = "sensor-light off";
+        document.getElementById("outsideText").innerText = "Nu este detectată mișcare în exterior.";
+    }, 3000);
+}
+
+function detectInsideMotion() {
+    document.getElementById("insideLight").className = "sensor-light orange-light";
+    document.getElementById("insideText").innerText = "Mișcare detectată pe hol.";
+
+    let now = Date.now();
+    let differenceSeconds = (now - lastValidScanTime) / 1000;
+
+    if (differenceSeconds <= accessWindowSeconds) {
+        addLog("PIR interior", "Mișcare pe hol după scanare RFID validă", "Permis");
+    } else {
+        activateAlarm("Mișcare pe hol fără card scanat în ultimele 5 secunde");
     }
 
-    if (random === 1) {
-        scanRejectedCard();
-    }
+    setTimeout(function() {
+        document.getElementById("insideLight").className = "sensor-light off";
+        document.getElementById("insideText").innerText = "Nu este detectată mișcare pe hol.";
+    }, 3000);
+}
 
-    if (random === 2) {
-        simulateMotion();
-    }
+function activateAlarm(reason) {
+    alarmActive = true;
+    alarmCount++;
 
-    if (random === 3) {
-        updateTemperatureAndHumidity();
+    document.getElementById("alarmText").innerText = "ACTIVATĂ";
+    document.getElementById("alarmBanner").innerText = reason;
+    document.getElementById("alarmBanner").className = "alarm-banner danger";
+
+    document.getElementById("systemStatusText").innerText = "Alertă securitate";
+    document.getElementById("systemDot").className = "dot offline";
+
+    addLog("Alarmă", reason, "Alarmă");
+    updateStats();
+}
+
+function disableAlarm() {
+    alarmActive = false;
+
+    document.getElementById("alarmText").innerText = "Dezactivată";
+    document.getElementById("alarmBanner").innerText = "Alarma a fost dezactivată manual.";
+    document.getElementById("alarmBanner").className = "alarm-banner safe";
+
+    document.getElementById("systemStatusText").innerText = "Sistem activ";
+    document.getElementById("systemDot").className = "dot online";
+
+    addLog("Alarmă", "Alarma a fost dezactivată manual", "Info");
+}
+
+function setNormalMode() {
+    nightMode = false;
+
+    document.getElementById("modeText").innerText = "Monitorizare normală";
+    document.getElementById("accessMessage").innerText = "Mod normal activ. Așteptare scanare card RFID.";
+
+    addLog("Sistem", "Mod normal activat", "Info");
+}
+
+function setNightMode() {
+    nightMode = true;
+
+    document.getElementById("modeText").innerText = "Monitorizare noapte";
+    document.getElementById("accessMessage").innerText = "Mod noapte activ. Securitatea este crescută.";
+
+    addLog("Sistem", "Mod noapte activat", "Info");
+}
+
+function clearLogs() {
+    document.getElementById("logTable").innerHTML = `
+        <tr>
+            <td>--:--:--</td>
+            <td>Sistem</td>
+            <td>Log-urile au fost șterse</td>
+            <td class="status-info">Info</td>
+        </tr>
+    `;
+}
+
+function updateAccessTimer() {
+    let now = Date.now();
+    let differenceSeconds = (now - lastValidScanTime) / 1000;
+    let remaining = Math.ceil(accessWindowSeconds - differenceSeconds);
+
+    if (remaining > 0) {
+        document.getElementById("accessTimer").innerText = remaining + "s";
+    } else {
+        document.getElementById("accessTimer").innerText = "0s";
     }
 }
 
 updateStats();
-setInterval(updateTemperatureAndHumidity, 5000);
-setInterval(autoSimulation, 12000);
+setInterval(updateAccessTimer, 300);
