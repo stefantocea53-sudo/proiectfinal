@@ -2,93 +2,80 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem de acces inteligent</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="page">
+<div class="container">
 
-    <header class="header">
+    <header class="topbar">
         <div>
             <h1>Sistem de acces inteligent</h1>
-            <p>Interfață web pentru monitorizare RFID, ușă, senzori de mișcare și alarmă</p>
+            <p>Interfață web pentru control acces, monitorizare mișcare și alarmă</p>
         </div>
 
-        <div class="header-status">
+        <div class="system-box">
             <span id="systemStatusText">Sistem activ</span>
-            <div id="systemDot" class="dot online"></div>
+            <div id="systemDot" class="status-dot online"></div>
         </div>
     </header>
 
-    <section class="main-layout">
+    <section class="grid-top">
 
-        <div class="left-panel">
-
-            <div class="access-card">
-                <div class="access-top">
-                    <div>
-                        <p class="label">Control acces</p>
-                        <h2 id="doorText">Ușă blocată</h2>
-                    </div>
-
-                    <div id="doorIcon" class="door-icon locked">
-                        🔒
-                    </div>
+        <div class="card large-card">
+            <div class="card-header">
+                <div>
+                    <p class="mini-title">CONTROL ACCES</p>
+                    <h2 id="doorText">Ușă blocată</h2>
                 </div>
 
-                <p id="accessMessage" class="access-message">
-                    Așteptare scanare card RFID.
-                </p>
-
-                <div class="rfid-box">
-                    <span>Ultimul card RFID</span>
-                    <strong id="lastCard">-- -- -- --</strong>
-                </div>
-
-                <div class="main-buttons">
-                    <button onclick="scanValidCard()">Scanează card autorizat</button>
-                    <button onclick="scanInvalidCard()" class="btn-red">Scanează card respins</button>
-                </div>
+                <div id="doorIcon" class="door-icon locked">🔒</div>
             </div>
 
-            <div class="rules-card">
-                <h3>Regulă de securitate</h3>
-                <p>
-                    Dacă senzorul de pe hol detectează mișcare și nu a fost scanat
-                    un card autorizat în ultimele <strong>5 secunde</strong>, sistemul
-                    consideră evenimentul ca acces neautorizat și pornește alarma.
-                </p>
+            <p id="accessMessage" class="soft-text">
+                Sistemul așteaptă scanarea unui card RFID.
+            </p>
 
-                <div class="countdown-box">
-                    <span>Timp rămas acces autorizat</span>
-                    <strong id="accessTimer">0s</strong>
-                </div>
+            <div class="rfid-panel">
+                <span>Ultimul card RFID</span>
+                <strong id="lastCard">-- -- -- --</strong>
             </div>
 
+            <div class="button-row">
+                <button onclick="scanValidCard()">Scanează card autorizat</button>
+                <button onclick="scanInvalidCard()" class="btn-red">Scanează card respins</button>
+            </div>
         </div>
 
-        <div class="right-panel">
+        <div class="side-column">
 
-            <div class="alarm-card">
-                <p class="label">Stare alarmă</p>
+            <div class="card">
+                <p class="mini-title">ALARMĂ</p>
                 <h2 id="alarmText">Dezactivată</h2>
-                <div id="alarmBanner" class="alarm-banner safe">
-                    Sistemul este în stare normală.
+
+                <div id="alarmBanner" class="alert-box safe-box">
+                    Sistemul funcționează normal.
                 </div>
 
-                <button onclick="disableAlarm()" class="btn-green full">
+                <button onclick="disableAlarm()" class="btn-green full-btn">
                     Dezactivează alarma
                 </button>
             </div>
 
-            <div class="mode-card">
-                <p class="label">Mod sistem</p>
+            <div class="card">
+                <p class="mini-title">MOD SISTEM</p>
                 <h2 id="modeText">Monitorizare normală</h2>
 
-                <div class="small-buttons">
+                <div class="button-row">
                     <button onclick="setNormalMode()">Mod normal</button>
-                    <button onclick="setNightMode()" class="btn-dark">Mod noapte</button>
+                    <button onclick="setNightMode()" class="btn-darkblue">Mod noapte</button>
+                </div>
+
+                <div class="timer-box">
+                    <span>Fereastră acces valid</span>
+                    <strong id="accessTimer">0s</strong>
                 </div>
             </div>
 
@@ -96,36 +83,38 @@
 
     </section>
 
-    <section class="sensor-section">
+    <section class="grid-middle">
 
-        <div class="sensor-card outside">
-            <div class="sensor-header">
+        <div class="card sensor-card">
+            <div class="sensor-head">
                 <div>
-                    <p class="label">Senzor exterior</p>
+                    <p class="mini-title">SENZOR EXTERIOR</p>
                     <h3>Mișcare în fața ușii</h3>
                 </div>
-                <div id="outsideLight" class="sensor-light off"></div>
+
+                <div id="outsideLight" class="light off"></div>
             </div>
 
-            <p id="outsideText">
+            <p id="outsideText" class="soft-text">
                 Nu este detectată mișcare în exterior.
             </p>
 
-            <button onclick="detectOutsideMotion()">
+            <button onclick="detectOutsideMotion()" class="btn-orange">
                 Simulează mișcare afară
             </button>
         </div>
 
-        <div class="sensor-card inside">
-            <div class="sensor-header">
+        <div class="card sensor-card">
+            <div class="sensor-head">
                 <div>
-                    <p class="label">Senzor interior</p>
+                    <p class="mini-title">SENZOR INTERIOR</p>
                     <h3>Mișcare pe hol</h3>
                 </div>
-                <div id="insideLight" class="sensor-light off"></div>
+
+                <div id="insideLight" class="light off"></div>
             </div>
 
-            <p id="insideText">
+            <p id="insideText" class="soft-text">
                 Nu este detectată mișcare pe hol.
             </p>
 
@@ -134,17 +123,18 @@
             </button>
         </div>
 
-        <div class="sensor-card door-state">
-            <div class="sensor-header">
+        <div class="card sensor-card">
+            <div class="sensor-head">
                 <div>
-                    <p class="label">Ușă / servo</p>
+                    <p class="mini-title">UȘĂ / SERVO</p>
                     <h3 id="servoText">Închisă</h3>
                 </div>
-                <div id="servoLight" class="sensor-light red-light"></div>
+
+                <div id="servoLight" class="light red-light"></div>
             </div>
 
-            <p>
-                Ușa se deschide automat doar după scanarea unui card autorizat.
+            <p class="soft-text">
+                Ușa se deschide după card valid și se închide automat după 5 secunde.
             </p>
 
             <button onclick="closeDoor()" class="btn-red">
@@ -154,39 +144,62 @@
 
     </section>
 
-    <section class="stats-section">
+    <section class="grid-status">
 
-        <div class="stat">
+        <div class="card">
+            <h3>Regulă de securitate</h3>
+
+            <p class="soft-text">
+                Dacă senzorul de pe hol detectează mișcare și ușa nu este deschisă
+                în urma unui card autorizat scanat în ultimele <strong>5 secunde</strong>,
+                sistemul pornește alarma.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Stare ușă</h3>
+
+            <textarea id="doorArea" readonly>
+Ușă închisă.
+Sistem pregătit pentru scanare RFID.
+            </textarea>
+        </div>
+
+    </section>
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
             <span>Accesări permise</span>
             <strong id="validCount">0</strong>
         </div>
 
-        <div class="stat">
+        <div class="stat-card">
             <span>Accesări respinse</span>
             <strong id="invalidCount">0</strong>
         </div>
 
-        <div class="stat">
+        <div class="stat-card">
             <span>Mișcări exterior</span>
             <strong id="outsideCount">0</strong>
         </div>
 
-        <div class="stat">
+        <div class="stat-card">
             <span>Alerte alarmă</span>
             <strong id="alarmCount">0</strong>
         </div>
 
     </section>
 
-    <section class="log-section">
+    <section class="card logs-card">
 
-        <div class="log-header">
+        <div class="logs-top">
             <div>
                 <h2>Jurnal evenimente</h2>
-                <p>Istoric acces, mișcare și alarmă</p>
+                <p class="soft-text">Istoric acces, senzori și alarmă</p>
             </div>
 
-            <button onclick="clearLogs()" class="btn-dark">
+            <button onclick="clearLogs()" class="btn-darkblue">
                 Șterge log-uri
             </button>
         </div>
@@ -206,7 +219,7 @@
                     <td>--:--:--</td>
                     <td>Sistem</td>
                     <td>Interfață pornită</td>
-                    <td class="status-ok">Info</td>
+                    <td class="status-info">Info</td>
                 </tr>
             </tbody>
         </table>
