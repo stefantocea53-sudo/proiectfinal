@@ -45,7 +45,6 @@
             </div>
         </header>
 
-        <!-- DASHBOARD -->
         <section id="dashboardSection" class="page-section active-section">
 
             <div class="grid-top">
@@ -176,7 +175,6 @@
 
         </section>
 
-        <!-- SENZORI -->
         <section id="senzoriSection" class="page-section">
 
             <div class="section-title">
@@ -277,7 +275,6 @@
 
         </section>
 
-        <!-- RFID -->
         <section id="rfidSection" class="page-section">
 
             <div class="section-title">
@@ -356,7 +353,6 @@
 
         </section>
 
-        <!-- SECURITATE -->
         <section id="securitateSection" class="page-section">
 
             <div class="section-title">
@@ -366,9 +362,9 @@
 
             <div class="security-grid">
 
-                <div class="card security-card">
+                <div class="card security-card security-card-mirror">
                     <p class="mini-title">NIVEL SECURITATE</p>
-                    <h2 id="securityLevelMirror">Controlat din Dashboard</h2>
+                    <h2 id="securityLevelMirror">NORMAL</h2>
                     <p class="soft-text">
                         NORMAL = sistem ok, RIDICAT = mod noapte, CRITIC = alarmă sau blocare.
                     </p>
@@ -424,7 +420,6 @@ Sistem pregătit pentru scanare RFID.
 
         </section>
 
-        <!-- ISTORIC -->
         <section id="istoricSection" class="page-section">
 
             <div class="section-title">
@@ -437,7 +432,7 @@ Sistem pregătit pentru scanare RFID.
                 <div class="logs-top">
                     <div>
                         <h2>Istoric evenimente</h2>
-<p class="soft-text">Evenimente acces, senzori, alarmă și blocări</p>
+                        <p class="soft-text">Evenimente acces, senzori, alarmă și blocări</p>
                     </div>
 
                     <div class="button-row">
@@ -470,7 +465,6 @@ Sistem pregătit pentru scanare RFID.
 
         </section>
 
-        <!-- ADMINISTRARE -->
         <section id="administrareSection" class="page-section">
 
             <div class="section-title">
@@ -487,6 +481,7 @@ Sistem pregătit pentru scanare RFID.
                 <div class="admin-buttons">
                     <button onclick="testAlarm()" class="btn-red">Test alarmă</button>
                     <button onclick="disableAlarm()" class="btn-green">Dezactivează alarma</button>
+                    <button onclick="toggleAlarmSound()" class="btn-orange">Sunet alarmă ON/OFF</button>
                     <button onclick="resetSystem()" class="btn-green">Reset sistem</button>
                     <button onclick="downloadLogs()" class="btn-cyan">Descarcă log-uri</button>
                     <button onclick="clearLogs()" class="btn-darkblue">Șterge log-uri</button>
