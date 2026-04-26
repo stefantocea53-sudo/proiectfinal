@@ -17,6 +17,12 @@ let blockTimer = null;
 
 let logsText = [];
 
+let audioContext = null;
+let alarmOscillator = null;
+let alarmGain = null;
+let alarmSoundInterval = null;
+let alarmSoundEnabled = true;
+
 function getTime() {
     let now = new Date();
 
@@ -163,6 +169,77 @@ function setBuzzer(active) {
         document.getElementById("buzzerText").innerText = "OPRIT";
         document.getElementById("buzzerLight").className = "buzzer-light off";
         document.getElementById("buzzerDescription").innerText = "Buzzerul este dezactivat.";
+    }
+}
+
+function startAlarmSound() {
+    if (alarmSoundEnabled === false) {
+        return;
+    }
+
+    if (alarmSoundInterval !== null) {
+        return;
+    }
+
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    alarmSoundInterval = setInterval(function () {
+        alarmOscillator = audioContext.createOscillator();
+        alarmGain = audioContext.createGain();
+
+        alarmOscillator.type = "square";
+        alarmOscillator.frequency.setValueAtTime(900, audioContext.currentTime);
+        alarmGain.gain.setValueAtTime(0.07, audioContext.currentTime);
+
+        alarmOscillator.connect(alarmGain);
+        alarmGain.connect(audioContext.destination);
+
+        alarmOscillator.start();
+
+        setTimeout(function () {
+            if (alarmOscillator) {
+                try {
+                    alarmOscillator.stop();
+                    alarmOscillator.disconnect();
+                } catch (e) {
+                }
+            }
+        }, 250);
+    }, 600);
+}
+
+function stopAlarmSound() {
+    if (alarmSoundInterval !== null) {
+        clearInterval(alarmSoundInterval);
+        alarmSoundInterval = null;
+    }
+
+    if (alarmOscillator !== null) {
+        try {
+            alarmOscillator.stop();
+            alarmOscillator.disconnect();
+        } catch (e) {
+        }
+    }
+
+    alarmOscillator = null;
+    alarmGain = null;
+}
+
+function toggleAlarmSound() {
+    alarmSoundEnabled = !alarmSoundEnabled;
+
+    if (alarmSoundEnabled === true) {
+        addLog("Audio", "Sunet alarmă activat", "Info");
+        updateDoorArea("Sunetul alarmei a fost activat.");
+
+        if (alarmActive === true) {
+            startAlarmSound();
+        }
+    } else {
+        stopAlarmSound();
+        addLog("Audio", "Sunet alarmă dezactivat", "Info");
+        updateDoorArea("Sunetul alarmei a fost dezactivat.");
     }
 }
 
@@ -361,6 +438,7 @@ function blockSystem() {
 
     setSecurityLevel("CRITIC", "Sistem blocat temporar după mai multe carduri respinse.");
     setBuzzer(true);
+    startAlarmSound();
 
     addLog("Sistem", "Blocare temporară după 3 carduri respinse consecutiv", "Alarmă");
     updateDoorArea("Sistem blocat temporar timp de 10 secunde.");
@@ -376,6 +454,7 @@ function blockSystem() {
 
         if (alarmActive === false) {
             setBuzzer(false);
+            stopAlarmSound();
 
             if (nightMode === true) {
                 setSecurityLevel("RIDICAT", "Mod noapte activ. Monitorizarea este mai strictă.");
@@ -460,6 +539,7 @@ function activateAlarm(reason) {
 
     setSecurityLevel("CRITIC", "Alarmă activă. Ușa este blocată și buzzerul este pornit.");
     setBuzzer(true);
+    startAlarmSound();
     updateZoneDiagram("alert");
 
     addLog("Alarmă", reason, "Alarmă");
@@ -477,6 +557,7 @@ function disableAlarm() {
     document.getElementById("systemDot").className = "status-dot online";
 
     setBuzzer(false);
+    stopAlarmSound();
 
     if (nightMode === true) {
         setSecurityLevel("RIDICAT", "Mod noapte activ. Monitorizarea este mai strictă.");
@@ -531,6 +612,8 @@ function resetSystem() {
     if (blockTimer !== null) {
         clearTimeout(blockTimer);
     }
+
+    stopAlarmSound();
 
     lastValidScanTime = 0;
     doorOpen = false;
@@ -608,7 +691,7 @@ function clearLogs() {
 }
 
 function downloadLogs() {
-    let content = "Jurnal evenimente - Sistem de acces inteligent\n\n";
+    let content = "Istoric evenimente - Sistem de acces inteligent\n\n";
 
     if (logsText.length === 0) {
         content += "Nu există log-uri salvate.\n";
@@ -620,7 +703,7 @@ function downloadLogs() {
     let link = document.createElement("a");
 
     link.href = URL.createObjectURL(file);
-    link.download = "loguri_sistem_acces.txt";
+    link.download = "istoric_evenimente_sistem_acces.txt";
     link.click();
 
     addLog("Sistem", "Log-urile au fost descărcate", "Info");
