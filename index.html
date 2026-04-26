@@ -2,250 +2,216 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>Sistem de acces inteligent și monitorizare web</title>
+    <title>Sistem de acces inteligent</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="app">
+<div class="page">
 
-    <aside class="sidebar">
-        <div class="logo">
-            <h2>SecureAccess</h2>
-            <p>Arduino Web Panel</p>
+    <header class="header">
+        <div>
+            <h1>Sistem de acces inteligent</h1>
+            <p>Interfață web pentru monitorizare RFID, ușă, senzori de mișcare și alarmă</p>
         </div>
 
-        <ul class="menu">
-            <li class="active">Dashboard</li>
-            <li>Monitorizare</li>
-            <li>RFID</li>
-            <li>Senzori</li>
-            <li>Alarmă</li>
-            <li>Log-uri</li>
-            <li>Setări</li>
-        </ul>
-
-        <div class="sidebar-footer">
-            <p>Proiect final</p>
-            <strong>Tocea Stefan</strong>
+        <div class="header-status">
+            <span id="systemStatusText">Sistem activ</span>
+            <div id="systemDot" class="dot online"></div>
         </div>
-    </aside>
+    </header>
 
-    <main class="content">
+    <section class="main-layout">
 
-        <header class="topbar">
-            <div>
-                <h1>Sistem de acces inteligent și monitorizare web</h1>
-                <p>Interfață grafică pentru control acces, securitate și monitorizare senzori</p>
-            </div>
+        <div class="left-panel">
 
-            <div class="system-state">
-                <span id="systemText">Sistem online</span>
-                <div class="online-dot"></div>
-            </div>
-        </header>
+            <div class="access-card">
+                <div class="access-top">
+                    <div>
+                        <p class="label">Control acces</p>
+                        <h2 id="doorText">Ușă blocată</h2>
+                    </div>
 
-        <section class="hero">
-            <div>
-                <h2>Dashboard principal</h2>
-                <p>
-                    Această interfață simulează monitorizarea unui sistem bazat pe Arduino,
-                    cititor RFID, senzori de mișcare și module de alarmare.
+                    <div id="doorIcon" class="door-icon locked">
+                        🔒
+                    </div>
+                </div>
+
+                <p id="accessMessage" class="access-message">
+                    Așteptare scanare card RFID.
                 </p>
-            </div>
 
-            <div class="hero-buttons">
-                <button onclick="scanAllowedCard()">Simulează card permis</button>
-                <button onclick="scanRejectedCard()" class="danger">Simulează card respins</button>
-            </div>
-        </section>
+                <div class="rfid-box">
+                    <span>Ultimul card RFID</span>
+                    <strong id="lastCard">-- -- -- --</strong>
+                </div>
 
-        <section class="cards">
-
-            <div class="card">
-                <h3>Stare ușă</h3>
-                <div id="doorStatus" class="big-status red">ÎNCHISĂ</div>
-                <p id="doorInfo">Ușa este blocată pentru acces neautorizat.</p>
-            </div>
-
-            <div class="card">
-                <h3>Alarmă</h3>
-                <div id="alarmStatus" class="big-status green">DEZACTIVATĂ</div>
-                <p id="alarmInfo">Sistemul de alarmă nu este activ.</p>
-            </div>
-
-            <div class="card">
-                <h3>Ultimul RFID</h3>
-                <div id="rfidCode" class="rfid-box">-- -- -- --</div>
-                <p id="rfidInfo">Niciun card scanat momentan.</p>
-            </div>
-
-            <div class="card">
-                <h3>Mod sistem</h3>
-                <div id="modeStatus" class="big-status blue">NORMAL</div>
-                <p>Mod de funcționare standard.</p>
-            </div>
-
-        </section>
-
-        <section class="monitor-grid">
-
-            <div class="panel">
-                <h2>Monitorizare senzori</h2>
-
-                <div class="sensor-list">
-
-                    <div class="sensor-item">
-                        <div>
-                            <h4>Senzor mișcare PIR</h4>
-                            <p>Detectează mișcarea în zona de acces.</p>
-                        </div>
-                        <span id="motionStatus" class="badge blue">Normal</span>
-                    </div>
-
-                    <div class="sensor-item">
-                        <div>
-                            <h4>Senzor gaz / fum</h4>
-                            <p>Monitorizează valori periculoase în încăpere.</p>
-                        </div>
-                        <span id="gasStatus" class="badge green">Sigur</span>
-                    </div>
-
-                    <div class="sensor-item">
-                        <div>
-                            <h4>Temperatură</h4>
-                            <p>Valoare citită de senzorul DHT22.</p>
-                        </div>
-                        <span id="tempValue" class="badge orange">24°C</span>
-                    </div>
-
-                    <div class="sensor-item">
-                        <div>
-                            <h4>Umiditate</h4>
-                            <p>Valoare citită de senzorul DHT22.</p>
-                        </div>
-                        <span id="humidityValue" class="badge purple">45%</span>
-                    </div>
-
+                <div class="main-buttons">
+                    <button onclick="scanValidCard()">Scanează card autorizat</button>
+                    <button onclick="scanInvalidCard()" class="btn-red">Scanează card respins</button>
                 </div>
             </div>
 
-            <div class="panel">
-                <h2>Panou de control</h2>
+            <div class="rules-card">
+                <h3>Regulă de securitate</h3>
+                <p>
+                    Dacă senzorul de pe hol detectează mișcare și nu a fost scanat
+                    un card autorizat în ultimele <strong>5 secunde</strong>, sistemul
+                    consideră evenimentul ca acces neautorizat și pornește alarma.
+                </p>
 
-                <div class="control-buttons">
-                    <button onclick="openDoor()">Deschide ușa</button>
-                    <button onclick="closeDoor()">Închide ușa</button>
-                    <button onclick="activateAlarm()" class="danger">Activează alarma</button>
-                    <button onclick="deactivateAlarm()" class="safe">Dezactivează alarma</button>
+                <div class="countdown-box">
+                    <span>Timp rămas acces autorizat</span>
+                    <strong id="accessTimer">0s</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="right-panel">
+
+            <div class="alarm-card">
+                <p class="label">Stare alarmă</p>
+                <h2 id="alarmText">Dezactivată</h2>
+                <div id="alarmBanner" class="alarm-banner safe">
+                    Sistemul este în stare normală.
+                </div>
+
+                <button onclick="disableAlarm()" class="btn-green full">
+                    Dezactivează alarma
+                </button>
+            </div>
+
+            <div class="mode-card">
+                <p class="label">Mod sistem</p>
+                <h2 id="modeText">Monitorizare normală</h2>
+
+                <div class="small-buttons">
                     <button onclick="setNormalMode()">Mod normal</button>
-                    <button onclick="setNightMode()">Mod noapte</button>
-                    <button onclick="simulateMotion()" class="warning">Simulează mișcare</button>
-                    <button onclick="simulateGasAlert()" class="danger">Simulează gaz</button>
+                    <button onclick="setNightMode()" class="btn-dark">Mod noapte</button>
                 </div>
             </div>
 
-        </section>
+        </div>
 
-        <section class="stats">
+    </section>
 
-            <div class="stat-card">
-                <h3>Accesări permise</h3>
-                <strong id="allowedCount">0</strong>
-                <p>Carduri autorizate</p>
+    <section class="sensor-section">
+
+        <div class="sensor-card outside">
+            <div class="sensor-header">
+                <div>
+                    <p class="label">Senzor exterior</p>
+                    <h3>Mișcare în fața ușii</h3>
+                </div>
+                <div id="outsideLight" class="sensor-light off"></div>
             </div>
 
-            <div class="stat-card">
-                <h3>Accesări respinse</h3>
-                <strong id="rejectedCount">0</strong>
-                <p>Carduri neautorizate</p>
-            </div>
-
-            <div class="stat-card">
-                <h3>Alerte securitate</h3>
-                <strong id="alertCount">0</strong>
-                <p>Evenimente importante</p>
-            </div>
-
-            <div class="stat-card">
-                <h3>Total log-uri</h3>
-                <strong id="totalLogs">0</strong>
-                <p>Evenimente înregistrate</p>
-            </div>
-
-        </section>
-
-        <section class="tables-grid">
-
-            <div class="table-panel">
-                <h2>Log-uri acces RFID</h2>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ora</th>
-                            <th>Cod RFID</th>
-                            <th>Utilizator</th>
-                            <th>Status</th>
-                            <th>Ușă</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="accessLog">
-                        <tr>
-                            <td>--:--</td>
-                            <td>-- -- -- --</td>
-                            <td>Sistem</td>
-                            <td class="neutral">Așteptare</td>
-                            <td>Închisă</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="table-panel">
-                <h2>Log-uri securitate</h2>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ora</th>
-                            <th>Sursă</th>
-                            <th>Eveniment</th>
-                            <th>Nivel</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="securityLog">
-                        <tr>
-                            <td>--:--</td>
-                            <td>Sistem</td>
-                            <td>Interfață pornită</td>
-                            <td class="permis">Info</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </section>
-
-        <section class="description">
-            <h2>Descrierea proiectului</h2>
-
-            <p>
-                Proiectul constă în realizarea unei interfețe grafice web pentru un sistem
-                de acces inteligent. Sistemul este gândit pentru a utiliza un cititor RFID,
-                senzori de mișcare, senzori de mediu și o alarmă pentru securizarea unei incinte.
+            <p id="outsideText">
+                Nu este detectată mișcare în exterior.
             </p>
 
-            <p>
-                Interfața permite vizualizarea stării ușii, controlul alarmei, afișarea
-                cardurilor scanate, înregistrarea evenimentelor și monitorizarea senzorilor.
-                Într-o variantă practică, această pagină poate primi date de la Arduino sau ESP32.
-            </p>
-        </section>
+            <button onclick="detectOutsideMotion()">
+                Simulează mișcare afară
+            </button>
+        </div>
 
-    </main>
+        <div class="sensor-card inside">
+            <div class="sensor-header">
+                <div>
+                    <p class="label">Senzor interior</p>
+                    <h3>Mișcare pe hol</h3>
+                </div>
+                <div id="insideLight" class="sensor-light off"></div>
+            </div>
+
+            <p id="insideText">
+                Nu este detectată mișcare pe hol.
+            </p>
+
+            <button onclick="detectInsideMotion()" class="btn-orange">
+                Simulează mișcare pe hol
+            </button>
+        </div>
+
+        <div class="sensor-card door-state">
+            <div class="sensor-header">
+                <div>
+                    <p class="label">Ușă / servo</p>
+                    <h3 id="servoText">Închisă</h3>
+                </div>
+                <div id="servoLight" class="sensor-light red-light"></div>
+            </div>
+
+            <p>
+                Ușa se deschide automat doar după scanarea unui card autorizat.
+            </p>
+
+            <button onclick="closeDoor()" class="btn-red">
+                Închide manual ușa
+            </button>
+        </div>
+
+    </section>
+
+    <section class="stats-section">
+
+        <div class="stat">
+            <span>Accesări permise</span>
+            <strong id="validCount">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>Accesări respinse</span>
+            <strong id="invalidCount">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>Mișcări exterior</span>
+            <strong id="outsideCount">0</strong>
+        </div>
+
+        <div class="stat">
+            <span>Alerte alarmă</span>
+            <strong id="alarmCount">0</strong>
+        </div>
+
+    </section>
+
+    <section class="log-section">
+
+        <div class="log-header">
+            <div>
+                <h2>Jurnal evenimente</h2>
+                <p>Istoric acces, mișcare și alarmă</p>
+            </div>
+
+            <button onclick="clearLogs()" class="btn-dark">
+                Șterge log-uri
+            </button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Ora</th>
+                    <th>Sursă</th>
+                    <th>Eveniment</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="logTable">
+                <tr>
+                    <td>--:--:--</td>
+                    <td>Sistem</td>
+                    <td>Interfață pornită</td>
+                    <td class="status-ok">Info</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </section>
 
 </div>
 
