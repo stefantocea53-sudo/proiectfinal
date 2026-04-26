@@ -160,6 +160,11 @@ body {
     letter-spacing: 3px;
 }
 
+.rfid-panel p {
+    color: #cbd5e1;
+    margin-top: 8px;
+}
+
 .button-row {
     display: flex;
     gap: 12px;
@@ -180,6 +185,7 @@ button {
 
 button:hover {
     opacity: 0.86;
+    transform: translateY(-1px);
 }
 
 .btn-red {
@@ -196,6 +202,10 @@ button:hover {
 
 .btn-darkblue {
     background: #1d4ed8;
+}
+
+.btn-cyan {
+    background: #0891b2;
 }
 
 .full-btn {
@@ -221,6 +231,11 @@ button:hover {
     color: #fca5a5;
 }
 
+.warning-box {
+    background: rgba(250, 204, 21, 0.14);
+    color: #fde047;
+}
+
 .timer-box {
     margin-top: 18px;
     background: #0f172a;
@@ -239,6 +254,123 @@ button:hover {
 .timer-box strong {
     color: #38bdf8;
     font-size: 28px;
+}
+
+.security-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.security-card h2 {
+    color: #4ade80;
+}
+
+.security-card.ridicat h2 {
+    color: #facc15;
+}
+
+.security-card.critic h2 {
+    color: #f87171;
+}
+
+.buzzer-light {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin: 15px 0;
+}
+
+.buzzer-light.off {
+    background: #52525b;
+}
+
+.buzzer-light.active {
+    background: #ef4444;
+    box-shadow: 0 0 20px #ef4444;
+    animation: pulse 0.8s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+.diagram-card {
+    margin-bottom: 20px;
+}
+
+.diagram-top {
+    margin-bottom: 18px;
+}
+
+.diagram-top h2 {
+    margin-bottom: 6px;
+}
+
+.zone-diagram {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr 60px 1fr;
+    align-items: center;
+    gap: 10px;
+}
+
+.zone-box {
+    background: #0b1220;
+    border: 1px solid #1f2937;
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.zone-box span {
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.zone-box strong {
+    font-size: 20px;
+    color: #e5e7eb;
+}
+
+.zone-door {
+    border-color: #ef4444;
+}
+
+.zone-active {
+    border-color: #f97316;
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
+}
+
+.zone-open {
+    border-color: #22c55e;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+}
+
+.zone-alert {
+    border-color: #ef4444;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.45);
+}
+
+.arrow {
+    text-align: center;
+    font-size: 32px;
+    color: #64748b;
 }
 
 .grid-middle {
@@ -293,7 +425,7 @@ button:hover {
 
 textarea {
     width: 100%;
-    min-height: 150px;
+    min-height: 170px;
     resize: none;
     border: 1px solid #2e2e35;
     border-radius: 16px;
@@ -308,7 +440,7 @@ textarea {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 18px;
     margin-bottom: 20px;
 }
@@ -320,8 +452,34 @@ textarea {
 }
 
 .stat-card strong {
-    font-size: 36px;
+    font-size: 32px;
     color: #60a5fa;
+}
+
+.admin-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.admin-card h2 {
+    margin-bottom: 8px;
+}
+
+.admin-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.users-card {
+    margin-bottom: 20px;
+}
+
+.users-card h2 {
+    margin-bottom: 18px;
 }
 
 .logs-card {
@@ -388,6 +546,16 @@ tr:hover td {
     font-weight: bold;
 }
 
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .security-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 1100px) {
     .grid-top,
     .grid-middle,
@@ -395,8 +563,17 @@ tr:hover td {
         grid-template-columns: 1fr;
     }
 
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .zone-diagram {
+        grid-template-columns: 1fr;
+    }
+
+    .arrow {
+        transform: rotate(90deg);
+    }
+
+    .admin-card {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 
@@ -411,7 +588,13 @@ tr:hover td {
         grid-template-columns: 1fr;
     }
 
-    .button-row {
+    .button-row,
+    .admin-buttons {
         flex-direction: column;
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
     }
 }
