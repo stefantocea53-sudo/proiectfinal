@@ -27,7 +27,7 @@ function getTime() {
     return h + ":" + m + ":" + s;
 }
 
-function showSection(sectionId, button) {
+function showSection(sectionId, clickedButton) {
     let sections = document.querySelectorAll(".page-section");
 
     sections.forEach(function(section) {
@@ -42,13 +42,11 @@ function showSection(sectionId, button) {
 
     let buttons = document.querySelectorAll(".menu-btn");
 
-    buttons.forEach(function(btn) {
-        btn.classList.remove("active");
+    buttons.forEach(function(button) {
+        button.classList.remove("active");
     });
 
-    if (button) {
-        button.classList.add("active");
-    }
+    clickedButton.classList.add("active");
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -78,6 +76,11 @@ function setLastAction(actionText) {
 
 function addLog(source, event, status) {
     let table = document.getElementById("logTable");
+
+    if (!table) {
+        return;
+    }
+
     let row = document.createElement("tr");
 
     let statusClass = "status-info";
@@ -108,6 +111,10 @@ function addLog(source, event, status) {
 function updateDoorArea(message, append = true) {
     let area = document.getElementById("doorArea");
 
+    if (!area) {
+        return;
+    }
+
     if (append === true) {
         area.value = "[" + getTime() + "] " + message + "\n" + area.value;
     } else {
@@ -119,19 +126,31 @@ function setSecurityLevel(level, description) {
     let securityCard = document.querySelector(".security-card");
     let securityLevel = document.getElementById("securityLevel");
     let securityDescription = document.getElementById("securityDescription");
+    let securityLevelMirror = document.getElementById("securityLevelMirror");
 
-    securityLevel.innerText = level;
-    securityDescription.innerText = description;
-
-    securityCard.classList.remove("ridicat");
-    securityCard.classList.remove("critic");
-
-    if (level === "RIDICAT") {
-        securityCard.classList.add("ridicat");
+    if (securityLevel) {
+        securityLevel.innerText = level;
     }
 
-    if (level === "CRITIC") {
-        securityCard.classList.add("critic");
+    if (securityDescription) {
+        securityDescription.innerText = description;
+    }
+
+    if (securityLevelMirror) {
+        securityLevelMirror.innerText = level;
+    }
+
+    if (securityCard) {
+        securityCard.classList.remove("ridicat");
+        securityCard.classList.remove("critic");
+
+        if (level === "RIDICAT") {
+            securityCard.classList.add("ridicat");
+        }
+
+        if (level === "CRITIC") {
+            securityCard.classList.add("critic");
+        }
     }
 }
 
@@ -148,25 +167,33 @@ function setBuzzer(active) {
 }
 
 function updateZoneDiagram(zone) {
-    document.getElementById("zoneOutside").className = "zone-box";
-    document.getElementById("zoneDoor").className = "zone-box zone-door";
-    document.getElementById("zoneInside").className = "zone-box";
+    let outside = document.getElementById("zoneOutside");
+    let door = document.getElementById("zoneDoor");
+    let inside = document.getElementById("zoneInside");
+
+    if (!outside || !door || !inside) {
+        return;
+    }
+
+    outside.className = "zone-box";
+    door.className = "zone-box zone-door";
+    inside.className = "zone-box";
 
     if (zone === "outside") {
-        document.getElementById("zoneOutside").className = "zone-box zone-active";
+        outside.className = "zone-box zone-active";
     }
 
     if (zone === "door-open") {
-        document.getElementById("zoneDoor").className = "zone-box zone-door zone-open";
+        door.className = "zone-box zone-door zone-open";
     }
 
     if (zone === "inside") {
-        document.getElementById("zoneInside").className = "zone-box zone-active";
+        inside.className = "zone-box zone-active";
     }
 
     if (zone === "alert") {
-        document.getElementById("zoneInside").className = "zone-box zone-alert";
-        document.getElementById("zoneDoor").className = "zone-box zone-door zone-alert";
+        inside.className = "zone-box zone-alert";
+        door.className = "zone-box zone-door zone-alert";
     }
 }
 
@@ -207,6 +234,23 @@ function closeDoor() {
     updateDoorArea("Ușă închisă.");
 }
 
+function startAutoClose() {
+    if (autoCloseTimer !== null) {
+        clearTimeout(autoCloseTimer);
+    }
+
+    autoCloseTimer = setTimeout(function () {
+        if (doorOpen === true) {
+            closeDoor();
+
+            document.getElementById("accessMessage").innerText = "Fereastra de acces a expirat. Ușa este blocată.";
+
+            addLog("Ușă", "Ușa s-a închis automat după 5 secunde", "Info");
+            updateDoorArea("Cele 5 secunde au expirat. Ușa s-a închis automat.");
+        }
+    }, 5000);
+}
+
 function scanValidCard() {
     if (systemBlocked === true) {
         addLog("RFID", "Scanare refuzată deoarece sistemul este blocat temporar", "Respins");
@@ -226,6 +270,12 @@ function scanValidCard() {
 
     document.getElementById("lastCard").innerText = "29 CA 28 12";
     document.getElementById("lastUser").innerText = "Utilizator: Administrator";
+
+    let mirror = document.getElementById("lastCardRfidMirror");
+    if (mirror) {
+        mirror.innerText = "29 CA 28 12";
+    }
+
     document.getElementById("accessMessage").innerText = "Card autorizat. Ușa este deschisă timp de 5 secunde.";
 
     openDoor();
@@ -233,21 +283,7 @@ function scanValidCard() {
     addLog("RFID", "Card autorizat scanat - Administrator", "Permis");
     updateDoorArea("Card valid detectat. Acces permis timp de 5 secunde.");
     updateStats();
-
-    if (autoCloseTimer !== null) {
-        clearTimeout(autoCloseTimer);
-    }
-
-    autoCloseTimer = setTimeout(function () {
-        if (doorOpen === true) {
-            closeDoor();
-
-            document.getElementById("accessMessage").innerText = "Fereastra de acces a expirat. Ușa este blocată.";
-
-            addLog("Ușă", "Ușa s-a închis automat după 5 secunde", "Info");
-            updateDoorArea("Cele 5 secunde au expirat. Ușa s-a închis automat.");
-        }
-    }, 5000);
+    startAutoClose();
 }
 
 function scanSecondValidCard() {
@@ -269,6 +305,12 @@ function scanSecondValidCard() {
 
     document.getElementById("lastCard").innerText = "53 7F 21 C9";
     document.getElementById("lastUser").innerText = "Utilizator: Student";
+
+    let mirror = document.getElementById("lastCardRfidMirror");
+    if (mirror) {
+        mirror.innerText = "53 7F 21 C9";
+    }
+
     document.getElementById("accessMessage").innerText = "Card autorizat. Ușa este deschisă timp de 5 secunde.";
 
     openDoor();
@@ -276,21 +318,7 @@ function scanSecondValidCard() {
     addLog("RFID", "Card autorizat scanat - Student", "Permis");
     updateDoorArea("Card valid detectat. Acces permis timp de 5 secunde.");
     updateStats();
-
-    if (autoCloseTimer !== null) {
-        clearTimeout(autoCloseTimer);
-    }
-
-    autoCloseTimer = setTimeout(function () {
-        if (doorOpen === true) {
-            closeDoor();
-
-            document.getElementById("accessMessage").innerText = "Fereastra de acces a expirat. Ușa este blocată.";
-
-            addLog("Ușă", "Ușa s-a închis automat după 5 secunde", "Info");
-            updateDoorArea("Cele 5 secunde au expirat. Ușa s-a închis automat.");
-        }
-    }, 5000);
+    startAutoClose();
 }
 
 function scanInvalidCard() {
@@ -305,6 +333,12 @@ function scanInvalidCard() {
 
     document.getElementById("lastCard").innerText = "91 B3 44 A2";
     document.getElementById("lastUser").innerText = "Utilizator: necunoscut";
+
+    let mirror = document.getElementById("lastCardRfidMirror");
+    if (mirror) {
+        mirror.innerText = "91 B3 44 A2";
+    }
+
     document.getElementById("accessMessage").innerText = "Card respins. Acces interzis.";
 
     closeDoor();
@@ -522,6 +556,11 @@ function resetSystem() {
 
     document.getElementById("lastCard").innerText = "-- -- -- --";
     document.getElementById("lastUser").innerText = "Utilizator: necunoscut";
+
+    let mirror = document.getElementById("lastCardRfidMirror");
+    if (mirror) {
+        mirror.innerText = "Vezi pe Dashboard";
+    }
 
     document.getElementById("outsideLight").className = "light off";
     document.getElementById("insideLight").className = "light off";
