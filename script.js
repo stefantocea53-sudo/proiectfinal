@@ -27,6 +27,41 @@ function getTime() {
     return h + ":" + m + ":" + s;
 }
 
+function showSection(sectionId, button) {
+    let sections = document.querySelectorAll(".page-section");
+
+    sections.forEach(function(section) {
+        section.classList.remove("active-section");
+    });
+
+    let selectedSection = document.getElementById(sectionId);
+
+    if (selectedSection) {
+        selectedSection.classList.add("active-section");
+    }
+
+    let buttons = document.querySelectorAll(".menu-btn");
+
+    buttons.forEach(function(btn) {
+        btn.classList.remove("active");
+    });
+
+    if (button) {
+        button.classList.add("active");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    let menuButtons = document.querySelectorAll(".menu-btn");
+
+    menuButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+            let sectionId = button.getAttribute("data-section");
+            showSection(sectionId, button);
+        });
+    });
+});
+
 function updateStats() {
     document.getElementById("validCount").innerText = validCount;
     document.getElementById("invalidCount").innerText = invalidCount;
